@@ -1,0 +1,27 @@
+{
+  "name": "miniprogram-dataprovider",
+  "version": "0.0.1",
+  "description": "a simple implementation of frontend data management for wx-miniprogram environment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:test" :"tsc test/unittest.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jzbuaa/miniprogram-dataprovider.git"
+  },
+  "keywords": [
+    "miniprogram"
+  ],
+  "author": "Jing Zhao",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jzbuaa/miniprogram-dataprovider/issues"
+  },
+  "homepage": "https://github.com/jzbuaa/miniprogram-dataprovider#readme",
+  "dependencies": {
+    "miniprogram-cache": "0.0.1",
+    "rxjs": "^6.4.0"
+  }
+}
