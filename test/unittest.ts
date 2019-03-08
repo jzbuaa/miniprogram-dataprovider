@@ -42,6 +42,24 @@ setTimeout(() => {
 }, 3000);
 
 
+let sub3 = dp.subscribe({
+    dataHandler: (data)=>{
+        throw new Error("sub3 messed up");
+    },
+    onFetching: ()=>{
+        console.log(Date.now(), "sub3", "onFetching")
+    },
+    onFetched:()=>{
+        console.log(Date.now(), "sub3", "onFetched");
+    },
+    onFetchError:(err)=>{
+        console.log(Date.now(), "sub3", "onFetchError", err);
+    },
+    onError: (err)=>{
+        console.log(Date.now(), "sub3", "onError", err);
+    }
+})
+
 setTimeout(() => {
     dp.unsubscribe(sub2);
 }, 10000);
@@ -49,3 +67,8 @@ setTimeout(() => {
 setTimeout(() => {
     dp.unsubscribe(sub1);
 }, 15000);
+
+setInterval(()=>{
+    console.log(Date.now(),"fetch");
+    dp.fetchRemote();
+}, 3000);
