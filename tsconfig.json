@@ -13,9 +13,7 @@
         "moduleResolution": "node",
         "alwaysStrict": true,
         "forceConsistentCasingInFileNames": true,
-        "declarationMap": true,
         "listEmittedFiles": true,
-        "declaration": true,
         "esModuleInterop": false,
         "noEmitHelpers": false, // 注入 helper function
         // "importHelpers": true,

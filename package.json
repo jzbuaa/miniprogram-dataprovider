@@ -1,8 +1,13 @@
 {
   "name": "miniprogram-dataprovider",
-  "version": "0.0.6",
+  "version": "0.0.14",
   "description": "a simple implementation of frontend data management for wx-miniprogram environment",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist/",
+    "es/",
+    "src/"
+  ],
   "scripts": {
     "build": "npm run build:es5 && npm run build:es6",
     "build:es5": "tsc --target es5 -d --outDir dist",
@@ -24,6 +29,6 @@
   },
   "homepage": "https://github.com/jzbuaa/miniprogram-dataprovider#readme",
   "dependencies": {
-    "miniprogram-cache": "0.0.5"
+    "miniprogram-cache": "^0.0.9"
   }
 }

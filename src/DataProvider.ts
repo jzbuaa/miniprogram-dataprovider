@@ -1,11 +1,13 @@
 import { ICache } from "miniprogram-cache";
 import { IDataFetcher } from "./IDataFetcher";
 import { ISubscription } from "./ISubscription";
+import { IDataHandler } from "./IDataHandler";
 
 export class DataProvider<T> {
     private static readonly _prefix: string = "$data:";
     private readonly _fetcher: IDataFetcher<T>;
     private readonly _fetchRetention: number = 0;
+    private readonly _postFetch: IDataHandler<T> | undefined = undefined;
     private readonly _cache?: ICache = undefined;
     private readonly _cacheKey: string = "";
     private readonly _subscriptions: Array<ISubscription<T>> = new Array<
@@ -21,13 +23,17 @@ export class DataProvider<T> {
     private _fetchPromise?: Promise<T> = undefined;
 
     public constructor(
+        initialValue: T| undefined,
         fetcher: IDataFetcher<T>,
         fetchRetention: number = 0,
-        cache?: ICache,
-        cacheKey?: string
+        postFetch: IDataHandler<T>| undefined,
+        cache: ICache| undefined,
+        cacheKey: string | undefined
     ) {
+        this._data = initialValue;
         this._fetcher = fetcher;
         this._fetchRetention = fetchRetention > 0 ? fetchRetention : 0;
+        this._postFetch = postFetch;
         if (cache) {
             this._cache = cache;
             if (!cacheKey) {
@@ -106,7 +112,7 @@ export class DataProvider<T> {
 
             this.fireFetchedEvent();
 
-            
+            this._postFetch && this._postFetch(this._data);            
 
             return this._data;
         } catch (err) {
