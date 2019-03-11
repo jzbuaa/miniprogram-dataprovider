@@ -2,32 +2,33 @@ import { ICache } from "miniprogram-cache";
 import { IDataFetcher } from "./IDataFetcher";
 import { ISubscription } from "./ISubscription";
 import { IDataHandler } from "./IDataHandler";
+import { IPostFetchHandler } from "./IPostFetchHandler";
 
 export class DataProvider<T> {
     private static readonly _prefix: string = "$data:";
     private readonly _fetcher: IDataFetcher<T>;
     private readonly _fetchRetention: number = 0;
-    private readonly _postFetch: IDataHandler<T> | undefined = undefined;
+    private readonly _postFetch: IPostFetchHandler<T> | undefined = undefined;
     private readonly _cache?: ICache = undefined;
     private readonly _cacheKey: string = "";
-    private readonly _subscriptions: Array<ISubscription<T>> = new Array<
-        ISubscription<T>
-    >();
+    private readonly _subscriptions: Array<
+        ISubscription<T> | undefined
+    > = new Array<ISubscription<T>>();
 
     private _lastFetched: number = 0;
 
     private _loadedFromCache: boolean = false;
     private _data?: T = undefined;
-   // private _dataLoaded: boolean = false;
+    // private _dataLoaded: boolean = false;
     private _fetching: boolean = false;
     private _fetchPromise?: Promise<T> = undefined;
 
     public constructor(
-        initialValue: T| undefined,
+        initialValue: T | undefined,
         fetcher: IDataFetcher<T>,
         fetchRetention: number = 0,
-        postFetch: IDataHandler<T>| undefined,
-        cache: ICache| undefined,
+        postFetch: IPostFetchHandler<T> | undefined,
+        cache: ICache | undefined,
         cacheKey: string | undefined
     ) {
         this._data = initialValue;
@@ -56,7 +57,12 @@ export class DataProvider<T> {
     }
 
     public unsubscribe(handle: number): void {
-        this._subscriptions.splice(handle, 1);
+        if (handle < 0 || handle >= this._subscriptions.length) {
+            throw new Error(
+                `index out of bound ${handle}/${this._subscriptions.length}`
+            );
+        }
+        this._subscriptions[handle] = undefined;
     }
 
     public async getLocal(
@@ -101,9 +107,15 @@ export class DataProvider<T> {
             this._fetching = true;
             // fire onFetching
             this.fireFetchingEvent();
-            this._data = await this._fetcher();
+            let data = await this._fetcher();
             this._lastFetched = Date.now();
             this._fetching = false;
+
+            if (this._postFetch) {
+                data = await this._postFetch(this._data, data);
+            }
+
+            this._data = data;
 
             // set local
             if (this._cache !== undefined) {
@@ -111,8 +123,6 @@ export class DataProvider<T> {
             }
 
             this.fireFetchedEvent();
-
-            this._postFetch && this._postFetch(this._data);            
 
             return this._data;
         } catch (err) {
@@ -154,7 +164,7 @@ export class DataProvider<T> {
         } else {
             this._data = data;
             this._subscriptions.forEach(sub => {
-                this.invokeDataChanged(sub);
+                sub && this.invokeDataChanged(sub);
             });
         }
     }
@@ -169,12 +179,12 @@ export class DataProvider<T> {
 
     private fireFetchingEvent() {
         this._subscriptions.forEach(sub => {
-            this.invokeFetching(sub);
+            sub && this.invokeFetching(sub);
         });
     }
 
     private invokeFetched(sub: ISubscription<T>) {
-        if(this._data === undefined){
+        if (this._data === undefined) {
             return;
         }
         try {
@@ -186,6 +196,9 @@ export class DataProvider<T> {
 
     private fireFetchedEvent() {
         this._subscriptions.forEach(sub => {
+            if (!sub) {
+                return;
+            }
             if (sub.onFetched) {
                 this.invokeFetched(sub);
             } else {
@@ -202,7 +215,7 @@ export class DataProvider<T> {
 
     private fireFetchErrorEvent(err: any) {
         this._subscriptions.forEach(sub => {
-            this.invokeFetchError(sub, err);
+            sub && this.invokeFetchError(sub, err);
         });
     }
 }

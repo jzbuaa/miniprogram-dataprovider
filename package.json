@@ -1,6 +1,6 @@
 {
   "name": "miniprogram-dataprovider",
-  "version": "0.0.14",
+  "version": "0.0.18",
   "description": "a simple implementation of frontend data management for wx-miniprogram environment",
   "main": "dist/index.js",
   "files": [
@@ -29,6 +29,6 @@
   },
   "homepage": "https://github.com/jzbuaa/miniprogram-dataprovider#readme",
   "dependencies": {
-    "miniprogram-cache": "^0.0.9"
+    "miniprogram-cache": "^0.1.0"
   }
 }

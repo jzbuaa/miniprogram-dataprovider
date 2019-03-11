@@ -2,6 +2,7 @@ import { ICache } from "miniprogram-cache";
 import { DataProvider } from "./DataProvider";
 import { IDataFetcher } from "./IDataFetcher";
 import { IDataHandler } from "./IDataHandler";
+import { IPostFetchHandler } from "./IPostFetchHandler"
 
 export class DataProviderBuilder<T> {
     private _initialValue: T| undefined = undefined;
@@ -9,7 +10,7 @@ export class DataProviderBuilder<T> {
     private _fetchRetention: number = 0;
     private _cache: ICache | undefined;
     private _cacheKey: string | undefined;
-    private _postFetch: IDataHandler<T> | undefined;
+    private _postFetch: IPostFetchHandler<T> | undefined;
 
     public constructor(fetcher: IDataFetcher<T>) {
         if (!fetcher) {
@@ -41,7 +42,7 @@ export class DataProviderBuilder<T> {
         return this;
     }
 
-    public usePostFetch(f: IDataHandler<T>): DataProviderBuilder<T> {
+    public usePostFetch(f: IPostFetchHandler<T>): DataProviderBuilder<T> {
         this._postFetch = f;
         return this;
     }
